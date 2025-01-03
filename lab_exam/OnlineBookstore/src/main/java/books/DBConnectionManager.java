@@ -19,9 +19,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class DBConnectionManager {
     private Connection connection;
-    private String databaseUrl = "jdbc:mysql://localhost:3306/bookdb"; // Database URL
-    private String dbUser = "root";                                   // Username for DB access
-    private String dbPassword = "1234";                               // Password for DB access
+    private String databaseUrl = "jdbc:mysql://localhost:3306/bookdb"; 
+    private String dbUser = "root";                                   
+    private String dbPassword = "1234";                               
 
     /**
      * Initiates the connection to the database.

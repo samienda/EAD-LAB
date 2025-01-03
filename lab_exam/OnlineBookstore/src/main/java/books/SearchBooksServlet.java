@@ -18,47 +18,45 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SearchBooksServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // Database connection manager instance
+
     private DBConnectionManager dbManager = new DBConnectionManager();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Retrieve the search query from the request
+
         String searchQuery = request.getParameter("title");
 
-        // Prepare response writer to send feedback to the client
+
         response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
+        PrintWriter responseWriter = response.getWriter();
 
         try {
-            // Open database connection
+
             dbManager.connect();
-            Connection conn = dbManager.getConnection();
+            Connection dbConnection = dbManager.getConnection();
 
-            // Prepare the SQL query to search for tasks by description
+
             String query = "SELECT * FROM books WHERE title LIKE ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
+            PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
 
-            // Set query parameter (use % for partial matches)
-            stmt.setString(1, "%" + searchQuery + "%");
 
-            // Execute the query
-            ResultSet rs = stmt.executeQuery();
+            preparedStatement.setString(1, "%" + searchQuery + "%");
 
-            // Start generating the HTML response
-            out.println("<html>");
-            out.println("<head><title>Search Results</title></head>");
-            out.println("<body>");
-            out.println("<h2>Search Results for: \"" + searchQuery + "\"</h2>");
 
-            // Check if there are results
+            ResultSet rs = preparedStatement.executeQuery();
+
+            responseWriter.println("<html>");
+            responseWriter.println("<head><title>Search Results</title></head>");
+            responseWriter.println("<body>");
+            responseWriter.println("<h2>Search Results for: \"" + searchQuery + "\"</h2>");
+
             if (!rs.isBeforeFirst()) {
-                out.println("<p>No books found matching the search query.</p>");
+                responseWriter.println("<p>No books found matching the search query.</p>");
             } else {
-                // Generate an HTML table for the results
-                out.println("<table border='1' cellspacing='0' cellpadding='5'>");
-                out.println("<tr><th>ID</th><th>Description</th><th>Status</th><th>Due Date</th></tr>");
+
+                responseWriter.println("<table border='1' cellspacing='0' cellpadding='5'>");
+                responseWriter.println("<tr><th>ID</th><th>Description</th><th>Status</th><th>Due Date</th></tr>");
 
                 while (rs.next()) {
                     int id = rs.getInt("id");
@@ -66,30 +64,29 @@ public class SearchBooksServlet extends HttpServlet {
                     String author = rs.getString("author");
                     String price = rs.getString("price");
 
-                    out.println("<tr>");
-                    out.println("<td>" + id + "</td>");
-                    out.println("<td>" + title + "</td>");
-                    out.println("<td>" + author + "</td>");
-                    out.println("<td>" + price + "</td>");
-                    out.println("</tr>");
+                    responseWriter.println("<tr>");
+                    responseWriter.println("<td>" + id + "</td>");
+                    responseWriter.println("<td>" + title + "</td>");
+                    responseWriter.println("<td>" + author + "</td>");
+                    responseWriter.println("<td>" + price + "</td>");
+                    responseWriter.println("</tr>");
                 }
 
-                out.println("</table>");
+                responseWriter.println("</table>");
             }
 
-            out.println("</body>");
-            out.println("</html>");
+            responseWriter.println("</body>");
+            responseWriter.println("</html>");
 
-            // Close the result set and statement
             rs.close();
-            stmt.close();
+            preparedStatement.close();
         } catch (Exception e) {
-            // Handle exceptions and respond with an error message
+
             e.printStackTrace();
-            out.println("<h2>An error occurred while searching for tasks.</h2>");
+            responseWriter.println("<h2>An error occurred while searching for tasks.</h2>");
         } finally {
             try {
-                // Close the database connection
+
                 dbManager.disconnect();
             } catch (Exception ex) {
                 ex.printStackTrace();

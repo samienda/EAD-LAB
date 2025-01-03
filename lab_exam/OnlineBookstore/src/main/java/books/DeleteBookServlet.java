@@ -17,50 +17,47 @@ import jakarta.servlet.http.HttpServletResponse;
 public class DeleteBookServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // Database connection manager instance
+
     private DBConnectionManager dbManager = new DBConnectionManager();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Retrieve book ID from the request
+
         String bookId = request.getParameter("id");
 
-        // Prepare response writer to send feedback to the client
+
         response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
+        PrintWriter responseWriter = response.getWriter();
 
         try {
-            // Open database connection
+
             dbManager.connect();
-            Connection conn = dbManager.getConnection();
+            Connection dbConnection = dbManager.getConnection();
 
-            // Prepare the SQL query to delete the book
+
             String query = "DELETE FROM books WHERE id = ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
+            PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
 
-            // Set query parameter
-            stmt.setInt(1, Integer.parseInt(bookId));
+            preparedStatement.setInt(1, Integer.parseInt(bookId));
 
-            // Execute the query
-            int rowsAffected = stmt.executeUpdate();
+            int rowsAffected = preparedStatement.executeUpdate();
 
-            // Respond with a success message
+
             if (rowsAffected > 0) {
-                out.println("<h2>Books with ID " + bookId + " deleted successfully!</h2>");
+                responseWriter.println("<h2>Books with ID " + bookId + " deleted successfully!</h2>");
             } else {
-                out.println("<h2>No books found with ID " + bookId + ".</h2>");
+                responseWriter.println("<h2>No books found with ID " + bookId + ".</h2>");
             }
 
-            // Close the statement
-            stmt.close();
+            preparedStatement.close();
         } catch (Exception e) {
-            // Handle exceptions and respond with an error message
+
             e.printStackTrace();
-            out.println("<h2>An error occurred while deleting the book.</h2>");
+            responseWriter.println("<h2>An error occurred while deleting the book.</h2>");
         } finally {
             try {
-                // Close the database connection
+
                 dbManager.disconnect();
             } catch (Exception ex) {
                 ex.printStackTrace();
