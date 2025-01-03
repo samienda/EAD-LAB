@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// SAMUEL ENDALE UGR/9314/14
+
+
 /**
  * Manages the database connection lifecycle.
  */

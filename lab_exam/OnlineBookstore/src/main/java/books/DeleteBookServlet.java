@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+// SAMUEL ENDALE UGR/9314/14
+
 @WebServlet("/deleteBook")
 public class DeleteBookServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
